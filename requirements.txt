@@ -1,5 +1,6 @@
 psutil==6.1.0
 streamlit==1.39.0
 pandas==2.2.3
+hijri-converter==2.3.1
 
 
