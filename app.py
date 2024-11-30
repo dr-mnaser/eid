@@ -28,21 +28,20 @@ eids_hijri = {
 
 # Function to calculate months and days until the next event
 def calculate_time_until_eid(eid_date):
+    """Calculate the months and days until the given eid date."""
     today = datetime.today()
-    next_eid_date = eid_date
-
-    if next_eid_date < today:  # If Eid has already passed this year
-        next_eid_date = next_eid_date.replace(year=today.year + 1)
-
-    # Calculate months and days difference
-    months_until_eid = next_eid_date.month - today.month
-    days_until_eid = next_eid_date.day - today.day
-
+    
+    # Calculate months and days
+    months_until_eid = eid_date.month - today.month
+    days_until_eid = eid_date.day - today.day
+    
+    # Adjust for negative days
     if days_until_eid < 0:
         months_until_eid -= 1
-        previous_month_days = (next_eid_date.replace(day=1) - timedelta(days=1)).day
+        previous_month_days = (eid_date.replace(day=1) - timedelta(days=1)).day
         days_until_eid += previous_month_days
-
+    
+    # Adjust for negative months
     if months_until_eid < 0:
         months_until_eid += 12
 
