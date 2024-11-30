@@ -78,10 +78,10 @@ def handle_white_days():
     return calculate_eid_date_and_time(hijri_month, 13)
 
 # Function to display a celebration message for the upcoming Eid
-def display_celebration_message(eid_name, days_until_eid):
-    if days_until_eid == 0:
+def display_celebration_message(eid_name, months_until_eid, days_until_eid):
+    if (months_until_eid == 0) and (days_until_eid == 0):
         st.markdown(f"🎉 Today is {eid_name}! Celebrate and enjoy the blessings of this special day! 🎉")
-    elif days_until_eid <= 3:
+    elif (months_until_eid == 0) and (days_until_eid <= 3):
         st.markdown(f"🌟 {eid_name} is in {days_until_eid} days! Prepare to celebrate this joyous occasion! 🌟")
 
 # Main function to display Eid dates and time until each event
@@ -93,9 +93,9 @@ def main():
         else:
             eid_date, months_until_eid, days_until_eid = calculate_eid_date_and_time(*dates)
 
-        eid_data.append({"Eid": eid_name, "Date": eid_date, "Months": months_until_eid, "Days": days_until_eid})
-        display_celebration_message(eid_name, days_until_eid)
-
+        #eid_data.append({"Eid": eid_name, "Date": eid_date, "Months": months_until_eid, "Days": days_until_eid})
+        eid_data.append({"Eid": eid_name, "Date": datetime.strptime(eid_date, "%B %d, %Y").strftime("%m/%d/%Y"), "Months": months_until_eid, "Days": days_until_eid})
+        display_celebration_message(eid_name, months_until_eid, days_until_eid)
     # Display countdown table
     df = pd.DataFrame(eid_data).sort_values(by=["Months", "Days"]).reset_index(drop=True)
     df.set_index("Eid", inplace=True)
