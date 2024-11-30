@@ -28,24 +28,24 @@ eids_hijri = {
 
 # Function to calculate months and days until the next event
 def calculate_time_until_eid(eid_date):
-    today = datetime.today()  # Use your time-zone-aware `get_local_today()` if needed
+    # Normalize both `today` and `eid_date` to midnight
+    today = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
+    eid_date = eid_date.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    # Calculate months and days
     months_until_eid = eid_date.month - today.month
     days_until_eid = eid_date.day - today.day
 
     # Adjust for negative days
     if days_until_eid < 0:
         months_until_eid -= 1
-        # Handle end-of-month days rollover
+        # Calculate the number of days in the previous month
         previous_month_days = (eid_date.replace(day=1) - timedelta(days=1)).day
         days_until_eid += previous_month_days
 
     # Adjust for negative months
     if months_until_eid < 0:
         months_until_eid += 12
-
-    # Edge case: Handle days_until_eid == -1 explicitly
-    if days_until_eid == -1 and months_until_eid == 0:
-        days_until_eid = 0  # Treat as today if it's the day of the event
 
     return months_until_eid, days_until_eid
 
