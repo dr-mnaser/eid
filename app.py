@@ -27,42 +27,29 @@ eids_hijri = {
 }
 
 # Function to calculate months and days until the next event
-def calculate_time_until_eid(birthdate):
+def calculate_time_until_eid(eid_date):
     today = datetime.today()
-    
-    # Calculate age in years, months, and days
-    years = today.year - birthdate.year
-    months = today.month - birthdate.month
-    days = today.day - birthdate.day
-    
-    # Adjust for negative values in the days and months
-    if days < 0:
-        months -= 1
-        previous_month = (today.replace(day=1) - timedelta(days=1)).day
-        days += previous_month
 
-    if months < 0:
-        years -= 1
-        months += 12
+    # Calculate the time difference in months and days
+    months_until_eid = eid_date.month - today.month
+    days_until_eid = eid_date.day - today.day
 
-    # Calculate the next birthday
-    next_birthday = birthdate.replace(year=today.year)
-    if next_birthday < today:
-        next_birthday = next_birthday.replace(year=today.year + 1)
-    
-    # Calculate the time difference until the next birthday
-    months_until_birthday = next_birthday.month - today.month
-    days_until_birthday = next_birthday.day - today.day
-    
-    if days_until_birthday < 0:
-        months_until_birthday -= 1
-        previous_month_days = (next_birthday.replace(day=1) - timedelta(days=1)).day
-        days_until_birthday += previous_month_days
+    # Adjust for negative days
+    if days_until_eid < 0:
+        months_until_eid -= 1  # Decrement the months
+        # Handle end-of-month days rollover
+        previous_month_days = (eid_date.replace(day=1) - timedelta(days=1)).day
+        days_until_eid += previous_month_days
 
-    if months_until_birthday < 0:
-        months_until_birthday += 12
+    # Cap days to zero if it becomes negative
+    days_until_eid = max(0, days_until_eid)
 
-    return months_until_birthday, days_until_birthday
+    # Adjust for negative months
+    if months_until_eid < 0:
+        months_until_eid += 12
+
+    # Return the months and days
+    return months_until_eid, days_until_eid
 
 # Function to calculate Eid date and handle recurring events
 def calculate_eid_date_and_time(hijri_month, hijri_day):
