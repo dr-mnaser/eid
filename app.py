@@ -29,12 +29,18 @@ eids_hijri = {
 # Function to calculate months and days until the next event
 def calculate_time_until_eid(eid_date):
     today = datetime.today()
-    months_until_eid = eid_date.month - today.month
-    days_until_eid = eid_date.day - today.day
+    next_eid_date = eid_date
+
+    if next_eid_date < today:  # If Eid has already passed this year
+        next_eid_date = next_eid_date.replace(year=today.year + 1)
+
+    # Calculate months and days difference
+    months_until_eid = next_eid_date.month - today.month
+    days_until_eid = next_eid_date.day - today.day
 
     if days_until_eid < 0:
         months_until_eid -= 1
-        previous_month_days = (eid_date.replace(day=1) - timedelta(days=1)).day
+        previous_month_days = (next_eid_date.replace(day=1) - timedelta(days=1)).day
         days_until_eid += previous_month_days
 
     if months_until_eid < 0:
@@ -50,7 +56,8 @@ def calculate_eid_date_and_time(hijri_month, hijri_day):
     eid_date_gregorian = eid_date_hijri.to_gregorian()
     eid_date = datetime(eid_date_gregorian.year, eid_date_gregorian.month, eid_date_gregorian.day)
 
-    if eid_date < today:  # Move to next year if the event has passed
+    # Handle the case where Eid has already passed
+    if eid_date < today:
         eid_date_hijri = Hijri(current_hijri_year + 1, hijri_month, hijri_day)
         eid_date_gregorian = eid_date_hijri.to_gregorian()
         eid_date = datetime(eid_date_gregorian.year, eid_date_gregorian.month, eid_date_gregorian.day)
@@ -70,7 +77,6 @@ def handle_white_days():
             hijri_month = 1
     return calculate_eid_date_and_time(hijri_month, 13)
 
-
 # Function to display a celebration message for the upcoming Eid
 def display_celebration_message(eid_name, days_until_eid):
     if days_until_eid == 0:
@@ -80,7 +86,6 @@ def display_celebration_message(eid_name, days_until_eid):
 
 # Main function to display Eid dates and time until each event
 def main():
-    # Eid dates and countdowns
     eid_data = []
     for eid_name, dates in eids_hijri.items():
         if eid_name == "White Days":
@@ -92,7 +97,6 @@ def main():
         display_celebration_message(eid_name, days_until_eid)
 
     # Display countdown table
-    #st.text("Time Until Eid:")
     df = pd.DataFrame(eid_data).sort_values(by=["Months", "Days"]).reset_index(drop=True)
     df.set_index("Eid", inplace=True)
     st.write(df)
@@ -112,6 +116,7 @@ if can_serve_user():
     main()
 else:
     st.warning("System resources are high. Please try again later.")
+
 
 #%%
 # from hijri_converter import Hijri
